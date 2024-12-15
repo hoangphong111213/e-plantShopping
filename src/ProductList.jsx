@@ -1,10 +1,11 @@
 import React, { useState,useEffect } from 'react';
 import './ProductList.css'
 import CartItem from './CartItem';
+import { addItem } from './CartSlice';
 function ProductList() {
     const [showCart, setShowCart] = useState(false); 
     const [showPlants, setShowPlants] = useState(false); // State to control the visibility of the About Us page
-
+    const [addedToCart, setAddedToCart] = useState({});
     const plantsArray = [
         {
             category: "Air Purifying Plants",
@@ -246,6 +247,14 @@ const handlePlantsClick = (e) => {
     e.preventDefault();
     setShowCart(false);
   };
+    const handleAddToCart = (product) => {
+        dispatch(addItem(product));
+        setAddedToCart((prevState) => ({
+        ...prevState,
+        [product.name]: true, // Set the product name as key and value as true to indicate it's added to cart
+        }));
+    };
+
     return (
         <div>
              <div className="navbar" style={styleObj}>
@@ -268,8 +277,22 @@ const handlePlantsClick = (e) => {
         </div>
         {!showCart? (
         <div className="product-grid">
-
-
+            {plantsArray.map((type, index) => (
+                <div key={index} className="category-section">
+                    <h2>{type.category}</h2>
+                    <div className="category-plants">
+                        {type.plants.map((plant, plantIndex) => (
+                            <div key={plantIndex} className="plant-card">
+                                <img src={plant.image} alt={plant.name}/>
+                                <h3>{plant.name}</h3>
+                                <p>{plant.description}</p>
+                                <p className="plant-cost">{plant.cost}</p>
+                                <button  className="product-button" onClick={() => handleAddToCart(plant)}>Add to Cart</button>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            ))}
         </div>
  ) :  (
     <CartItem onContinueShopping={handleContinueShopping}/>
